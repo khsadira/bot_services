@@ -101,16 +101,16 @@ async function reassignMessage() {
 
 function writeBotActivity(nbUser) {
     if (nbUser <= 1) {
-        client.user.setActivity(nbUser + " " + ACTIVITY_NAME + " en service", {type: 'WATCHING'});
+        client.user.setActivity(nbUser + " " + USERS_ACTIVITY_NAME + " en service", {type: 'WATCHING'});
     } else {
-        client.user.setActivity(nbUser + " " + ACTIVITY_NAME + "s en service", {type: 'WATCHING'});
+        client.user.setActivity(nbUser + " " + USERS_ACTIVITY_NAME + "s en service", {type: 'WATCHING'});
     }
 }
 
 client.login(TOKEN)
 
 client.on("ready", async () => {
-    console.log(BOT_NAME + " bot a été démarré.")
+    console.log(WORK_ACTIVITY_NAME + " bot a été démarré.")
 
     currentGuild = await client.guilds.cache.get(GUILD_ID);
     infoServiceChan = await currentGuild.channels.cache.find(channel => channel.id === INFO_SERVICE_CHAN_ID);
@@ -135,6 +135,18 @@ client.on("ready", async () => {
         });
     });
     
+    if (infoServiceStickyMsg == undefined) {
+        writeBotActivity(0);
+        var descriptionString = "**Nombre de " + USERS_ACTIVITY_NAME + " en service: 0**";
+        const embed = new MessageEmbed()
+            .setTitle(WORK_ACTIVITY_NAME + ": "+ capitalize(USERS_ACTIVITY_NAME) + " en service")
+            .setThumbnail(EMBED_ACTIVITY_IMAGE_LINK)
+            .setColor(EMBED_TAG_COLOR_STICKY_SERVICE)
+            .setDescription(descriptionString);
+        infoServiceStickyMsg = await infoServiceChan.send({embeds:[embed]})
+
+    }
+
     if (fs.existsSync('users_meta.json')) {
         let usersMetaTmp = fs.readFileSync('users_meta.json').toString();
         usersMeta = JSON.parse(usersMetaTmp);
@@ -309,7 +321,7 @@ client.on('messageCreate', async (message) => {
                         usersMeta[name].totalnbservice++;
                         editRecapMessage(name);
 
-                        if (!(hours == 0 && minutes < 5)) {
+                        if (!(hours == 0 && minutes < 1)) {
 
                             const embed = new MessageEmbed()
                             .setTitle(WORK_ACTIVITY_NAME + " service")
