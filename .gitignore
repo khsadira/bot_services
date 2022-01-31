@@ -1,0 +1,8 @@
+__log__
+__pid__
+__run__
+__upd__
+.vscode
+__logs__
+node_modules
+config.json
